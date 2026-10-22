@@ -1,0 +1,22 @@
+{
+  "name": "conform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BOT Chain ERC-4337 compatibility and sponsorship conformance tool",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @conform/web",
+    "build": "npm run build --workspace @conform/web",
+    "start": "npm run start --workspace @conform/web",
+    "lint": "npm run lint --workspace @conform/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspace @conform/chain",
+    "test:watch": "npm run test:watch --workspace @conform/chain"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
