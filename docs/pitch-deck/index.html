@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Conform — BOT Chain ERC-4337 conformance workbench</title>
+<style>
+  :root {
+    --ink: #070907;
+    --void: #050706;
+    --panel: #0d110e;
+    --elevated: #121713;
+    --line: #202820;
+    --line-strong: #2b352c;
+    --line-bright: #3d493e;
+    --paper: #edf2ec;
+    --muted: #8e9b90;
+    --lime: #c8f36a;
+    --amber: #f0b95a;
+    --coral: #f0786b;
+    --mono: ui-monospace, "Cascadia Code", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--void);
+    color: var(--paper);
+    font-family: var(--sans);
+    overflow: hidden;
+  }
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: var(--lime); z-index: 50; transition: width 0.25s ease;
+  }
+  .chrome {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 28px; font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+    pointer-events: none;
+  }
+  .chrome .brand { display: flex; align-items: center; gap: 8px; color: var(--paper); }
+  .chrome .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); }
+  .slides { height: 100vh; }
+  .slide {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; justify-content: center;
+    padding: 72px 7vw 88px; max-width: 1280px; margin: 0 auto;
+  }
+  .slide.active { display: flex; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--lime); margin-bottom: 18px;
+  }
+  h1 { font-size: clamp(44px, 8vw, 96px); line-height: 1.02; letter-spacing: -0.03em; }
+  h2 { font-size: clamp(28px, 4.4vw, 46px); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 26px; }
+  h3 {
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .sub { font-size: clamp(17px, 2.2vw, 24px); color: var(--muted); margin-top: 18px; max-width: 46ch; }
+  .quote {
+    margin-top: 34px; padding: 18px 22px; border-left: 3px solid var(--lime);
+    background: var(--panel); border-radius: 0 10px 10px 0;
+    font-family: var(--mono); font-size: clamp(14px, 1.8vw, 18px); color: var(--paper);
+    max-width: 52ch;
+  }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  ul { list-style: none; display: flex; flex-direction: column; gap: 13px; }
+  li { position: relative; padding-left: 26px; font-size: clamp(15px, 1.7vw, 18px); line-height: 1.5; color: var(--paper); }
+  li::before {
+    content: ""; position: absolute; left: 0; top: 0.52em;
+    width: 9px; height: 9px; border-radius: 2px; background: var(--lime);
+  }
+  li.dim { color: var(--muted); }
+  li.dim::before { background: var(--line-bright); }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 22px 24px;
+  }
+  .card.lime { border-color: rgba(200, 243, 106, 0.35); }
+  .card h3 { color: var(--lime); }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 26px; }
+  .chip {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em;
+    border: 1px solid var(--line-strong); background: var(--elevated);
+    border-radius: 999px; padding: 8px 16px; color: var(--paper);
+  }
+  .chip.hot { border-color: rgba(200, 243, 106, 0.5); color: var(--lime); }
+  .stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  .stat {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 22px; min-width: 130px;
+  }
+  .stat .n { font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -0.02em; }
+  .stat .n.lime { color: var(--lime); }
+  .stat .n.amber { color: var(--amber); }
+  .stat .l {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--muted); margin-top: 6px;
+  }
+  a { color: var(--lime); text-decoration: none; border-bottom: 1px solid rgba(200, 243, 106, 0.35); }
+  a:hover { border-bottom-color: var(--lime); }
+  .links { display: flex; flex-wrap: wrap; gap: 12px 22px; margin-top: 26px; font-family: var(--mono); font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: clamp(12px, 1.5vw, 15px); }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); font-weight: 600;
+  }
+  td { font-family: var(--mono); color: var(--paper); }
+  td .ok { color: var(--lime); }
+  .mono { font-family: var(--mono); }
+  .muted { color: var(--muted); }
+  .note { font-size: 14px; color: var(--muted); margin-top: 16px; line-height: 1.55; }
+  .frame {
+    border: 1px solid var(--line-strong); border-radius: 12px; overflow: hidden;
+    background: var(--elevated);
+  }
+  .frame .bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+  }
+  .frame .bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--line-bright); }
+  .frame img {
+    display: block; width: 100%; height: clamp(280px, 48vh, 460px);
+    object-fit: cover; object-position: top center; background: var(--ink);
+  }
+  .flow {
+    display: grid; grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 12px; align-items: stretch; margin: 10px 0 24px;
+  }
+  .flow .box {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px; font-size: 14px; line-height: 1.45;
+  }
+  .flow .box strong { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lime); margin-bottom: 8px; }
+  .flow .arrow { align-self: center; color: var(--muted); font-family: var(--mono); font-size: 20px; }
+  .big-rule {
+    font-family: var(--mono); font-size: clamp(15px, 2vw, 20px);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 20px; margin-bottom: 14px;
+  }
+  .big-rule b { color: var(--lime); font-weight: 600; }
+  .nav-hint {
+    position: fixed; bottom: 18px; right: 28px; z-index: 40;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); pointer-events: none;
+  }
+  .dots { position: fixed; bottom: 20px; left: 28px; z-index: 40; display: flex; gap: 8px; }
+  .dots button {
+    width: 22px; height: 6px; border-radius: 3px; border: 0; cursor: pointer;
+    background: var(--line-strong); padding: 0;
+  }
+  .dots button.on { background: var(--lime); }
+  @media (max-width: 860px) {
+    .cols, .cols-3, .flow { grid-template-columns: 1fr; }
+    .flow .arrow { transform: rotate(90deg); }
+    .slide { padding: 64px 6vw 96px; justify-content: flex-start; padding-top: 88px; overflow-y: auto; }
+    .chrome { padding: 14px 18px; }
+  }
+  @media print {
+    body { overflow: visible; }
+    .progress, .chrome, .dots, .nav-hint { display: none !important; }
+    .slides { height: auto; }
+    .slide { position: static; display: flex !important; page-break-after: always; min-height: 100vh; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<header class="chrome">
+  <span class="brand"><span class="dot"></span> Conform</span>
+  <span id="counter">01 / 10</span>
+</header>
+
+<main class="slides" id="slides">
+
+  <section class="slide active">
+    <div class="eyebrow">BOT Chain Testnet · ERC-4337</div>
+    <h1>Conform</h1>
+    <p class="sub">A conformance workbench for account abstraction stacks. Probe the network, bundler, contracts and account — then prove a UserOperation end to end.</p>
+    <div class="quote">“A submitted operation is not a confirmed operation.”</div>
+    <div class="links">
+      <a href="https://github.com/Fr3dy03/Conform">github.com/Fr3dy03/Conform</a>
+      <a href="https://github.com/Fr3dy03/Conform/blob/main/docs/onchain-records.md">On-chain records</a>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">The problem</div>
+    <h2>Account abstraction fails in pieces.</h2>
+    <ul>
+      <li>EntryPoint, factory and implementation drift silently across deployments.</li>
+      <li>Bundlers omit methods, miscalculate verification gas, or reject estimates they just returned.</li>
+      <li>Counterfactual accounts break gas estimation until someone remembers to prefund them.</li>
+      <li>Receipts end in a hash — with no explanation of which layer actually failed.</li>
+    </ul>
+    <div class="card lime" style="margin-top:28px">
+      <p style="font-size:clamp(15px,1.8vw,19px);line-height:1.5">
+        Today’s workflow is paste-and-pray: explorer tabs, bundler logs, ad-hoc scripts —
+        redone from scratch for every chain and every stack change.
+      </p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">The solution</div>
+    <h2>One page. Five stages. Twenty-two checks.</h2>
+    <div class="chips">
+      <span class="chip">Network</span>
+      <span class="chip">Bundler</span>
+      <span class="chip">Contracts</span>
+      <span class="chip">Account</span>
+      <span class="chip hot">UserOperation</span>
+    </div>
+    <ul>
+      <li>Live probes: chain ID, client version, latency; bundler method surface and EntryPoint support.</li>
+      <li>Bytecode-verified contracts: EntryPoint v0.7, SimpleAccountFactory, implementation lookup.</li>
+      <li>SimpleAccount derivation from the owner EOA, funding state, EntryPoint nonce.</li>
+      <li>Full path: estimate → sign the raw <span class="mono">userOpHash</span> → submit → verify the receipt.</li>
+      <li class="dim">Sponsorship is reported honestly: unknown until a verified paymaster proves otherwise.</li>
+    </ul>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">How it works</div>
+    <h2>Keys stay in the wallet. Evidence comes from the chain.</h2>
+    <div class="flow">
+      <div class="box"><strong>Browser</strong>Next.js console. Never receives keys. Injected wallet signs the raw hash via <span class="mono">personal_sign</span>; signature stays in memory.</div>
+      <div class="arrow">→</div>
+      <div class="box"><strong>Same-origin relays</strong><span class="mono">/api/rpc</span> &amp; <span class="mono">/api/bundler</span>: method allowlists, 64&nbsp;KB body cap, 180&nbsp;req/min, 20&nbsp;s / 30&nbsp;s upstream timeouts.</div>
+      <div class="arrow">→</div>
+      <div class="box"><strong>BOT Chain testnet</strong><span class="mono">rpc.bohr.life</span> · <span class="mono">bundler.bohr.life</span> · EntryPoint v0.7 · SimpleAccountFactory.</div>
+    </div>
+    <div class="big-rule"><b>Receipt rule:</b> success = bundler receipt <span class="mono">success: true</span> <b>AND</b> outer transaction status <span class="mono">0x1</span>.</div>
+    <p class="note">Pure TypeScript core in <span class="mono">packages/chain</span> (viem + Zod) — derivation, diagnostics, hashing and reporting, testable without a browser (19 unit tests).</p>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Evidence model</div>
+    <h2>Three rules the UI cannot break.</h2>
+    <div class="big-rule"><b>1 — Submitted ≠ confirmed.</b> A bundler hash is a lead, not a result. Success requires inner <span class="mono">success=true</span> and outer status <span class="mono">0x1</span>.</div>
+    <div class="big-rule"><b>2 — Sponsorship is unknown until proven.</b> A configured paymaster proves nothing; only a real sponsored UserOperation does.</div>
+    <div class="big-rule"><b>3 — Reports never carry secrets.</b> No keys, seed phrases, signatures or raw payloads in reports or share links. <span class="mono">/report</span> is noindex; demo mode never connects, signs or broadcasts.</div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Proof · live testnet run</div>
+    <h2>Headless end-to-end, receipts verified.</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="n lime">21</div><div class="l">Pass</div></div>
+      <div class="stat"><div class="n">0</div><div class="l">Fail</div></div>
+      <div class="stat"><div class="n amber">1</div><div class="l">Unknown · sponsorship</div></div>
+      <div class="stat"><div class="n">2</div><div class="l">UserOps on chain</div></div>
+    </div>
+    <div class="cols">
+      <ul>
+        <li>Full UI flow driven in Chrome: connect → derive → sign → submit → receipt verified.</li>
+        <li>Relay guards exercised: cross-origin 403, bad method 403, oversized 413, GET 405.</li>
+        <li>Zero console errors; report export &amp; share link contain no secrets.</li>
+        <li>22 Oct 2026 — run reproduced by the checked-in E2E harness.</li>
+      </ul>
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i> localhost:3001/console — live, receipt verified</div>
+        <img src="console-confirmed.png" alt="Conform console showing a verified live UserOperation receipt on BOT Chain testnet" />
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">On-chain interaction records</div>
+    <h2>Wallet explorer links — verify everything yourself.</h2>
+    <table>
+      <thead>
+        <tr><th>Interaction</th><th>Transaction</th><th>Block</th><th>Gas used</th><th>Result</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SimpleAccount deployment</td>
+          <td><a href="https://scan.bohr.life/tx/0xce8c0c20457e7358578f567e550b18c06cc8998c84c51c80b45b634c634b2995">0xce8c0c20…b2995</a></td>
+          <td>27,678,217</td>
+          <td>275,279</td>
+          <td><span class="ok">0x1 · success</span></td>
+        </tr>
+        <tr>
+          <td>Conformance UserOperation</td>
+          <td><a href="https://scan.bohr.life/tx/0x3769fc038c641c03f11e5cd3165744376c089ad035524e1bc228680271a58d7d">0x3769fc03…58d7d</a></td>
+          <td>27,735,482</td>
+          <td>87,757</td>
+          <td><span class="ok">0x1 · success</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="links">
+      <a href="https://scan.bohr.life/address/0x5a043e74A78c5534DF9C7f76685b36A59774FD37">Owner EOA 0x5a043e…74FD37</a>
+      <a href="https://scan.bohr.life/address/0x750c09Ff0c9dd3215F2451D3DB878Afa9915A731">Smart account 0x750c09…15A731</a>
+      <a href="https://github.com/Fr3dy03/Conform/blob/main/docs/onchain-records.md">Full records</a>
+    </div>
+    <p class="note">BOT Chain Testnet (chain&nbsp;968). Both operations ran without a paymaster; gas prefunded from the smart account. Receipts re-verified over RPC.</p>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Security &amp; stack</div>
+    <h2>Hardened by default, boring on purpose.</h2>
+    <div class="cols">
+      <div>
+        <h3>Security posture</h3>
+        <ul>
+          <li>No key custody: the wallet signs; the signature never leaves browser memory.</li>
+          <li>Relays allowlist methods — read-only RPC, bundler methods for the UserOp path only.</li>
+          <li>Sanitized error text; reports exclude keys, signatures and raw payloads.</li>
+          <li>Demo mode never connects, signs or broadcasts.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Stack</h3>
+        <ul>
+          <li>Next.js 16 · React 19 · TypeScript 5.9 · Tailwind 4.</li>
+          <li>viem · Zod · Vitest — pure-TS core, typed end to end.</li>
+          <li>Monorepo: <span class="mono">apps/web</span> UI + relays, <span class="mono">packages/chain</span> logic, <span class="mono">packages/ui</span> components.</li>
+          <li>Vercel-ready: root directory <span class="mono">apps/web</span>, zero env vars required.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Limitations &amp; roadmap</div>
+    <h2>Honest about what it proves.</h2>
+    <div class="cols">
+      <div>
+        <h3>Today</h3>
+        <ul>
+          <li class="dim">BOT Chain testnet only; pinned to chain 968.</li>
+          <li class="dim">Bundler checks are a sampled method matrix, not full compliance.</li>
+          <li class="dim">Sponsorship unproven without a real paymaster operation.</li>
+          <li class="dim">EOA paymaster and EIP-7702 flows out of scope.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Next</h3>
+        <ul>
+          <li>Verified paymaster flows with real sponsored UserOperations.</li>
+          <li>EIP-7702 delegation path on the same receipt discipline.</li>
+          <li>Multi-bundler matrix and scheduled E2E runs in CI.</li>
+          <li>Mainnet profile once BOT Chain mainnet endpoints stabilize.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="eyebrow">Run it</div>
+    <h2>Verify everything. Trust receipts.</h2>
+    <div class="big-rule"><b>npm install &amp;&amp; npm run dev</b> → <a href="http://localhost:3000/console">localhost:3000/console</a> · add <span class="mono">?demo=1</span> for labelled sample evidence</div>
+    <div class="links">
+      <a href="https://github.com/Fr3dy03/Conform">GitHub repository</a>
+      <a href="https://github.com/Fr3dy03/Conform/blob/main/docs/onchain-records.md">On-chain records</a>
+      <a href="https://scan.bohr.life/address/0x750c09Ff0c9dd3215F2451D3DB878Afa9915A731">Smart account</a>
+      <a href="https://faucet.botchain.ai/basic">Testnet faucet</a>
+      <a href="https://dev-docs.botchain.ai/">BOT Chain docs</a>
+      <a href="https://www.botchain.ai/en/">botchain.ai</a>
+    </div>
+    <p class="note">Conform is a BOT Chain testnet workbench for ERC-4337 conformance. Testnet only. No keys, no custody, no claims without receipts.</p>
+  </section>
+
+</main>
+
+<nav class="dots" id="dots" aria-label="Slides"></nav>
+<div class="nav-hint">← → · space · click</div>
+
+<script>
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+    var counter = document.getElementById("counter");
+    var progress = document.getElementById("progress");
+    var dots = document.getElementById("dots");
+    var current = 0;
+
+    slides.forEach(function (_, i) {
+      var b = document.createElement("button");
+      b.setAttribute("aria-label", "Slide " + (i + 1));
+      b.addEventListener("click", function (e) { e.stopPropagation(); go(i); });
+      dots.appendChild(b);
+    });
+
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+    function go(i) {
+      current = Math.max(0, Math.min(slides.length - 1, i));
+      slides.forEach(function (s, j) { s.classList.toggle("active", j === current); });
+      Array.prototype.forEach.call(dots.children, function (d, j) {
+        d.classList.toggle("on", j === current);
+      });
+      counter.textContent = pad(current + 1) + " / " + pad(slides.length);
+      progress.style.width = ((current + 1) / slides.length * 100) + "%";
+      history.replaceState(null, "", "#" + (current + 1));
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+        e.preventDefault(); go(current + 1);
+      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault(); go(current - 1);
+      } else if (e.key === "Home") { go(0); }
+      else if (e.key === "End") { go(slides.length - 1); }
+    });
+
+    document.addEventListener("click", function (e) {
+      if (e.target.closest("a, button")) return;
+      go(current + 1 >= slides.length ? 0 : current + 1);
+    });
+
+    var start = parseInt((location.hash || "").replace("#", ""), 10);
+    go(isNaN(start) ? 0 : start - 1);
+  })();
+</script>
+</body>
+</html>

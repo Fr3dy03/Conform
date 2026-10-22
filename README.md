@@ -79,6 +79,26 @@ Official links: [BOT Chain](https://www.botchain.ai/en/),
 [explorer](https://scan.botchain.ai),
 [developer docs](https://dev-docs.botchain.ai/).
 
+## On-chain interaction records
+
+Live testnet activity from the verification runs, with wallet explorer links:
+
+| Interaction | Transaction | Block | Result |
+| --- | --- | --- | --- |
+| SimpleAccount deployment | [`0xce8c…b2995`](https://scan.bohr.life/tx/0xce8c0c20457e7358578f567e550b18c06cc8998c84c51c80b45b634c634b2995) | 27678217 | `0x1` success |
+| Conformance UserOperation | [`0x3769…58d7d`](https://scan.bohr.life/tx/0x3769fc038c641c03f11e5cd3165744376c089ad035524e1bc228680271a58d7d) | 27735482 | `0x1` success |
+
+Accounts: [owner EOA](https://scan.bohr.life/address/0x5a043e74A78c5534DF9C7f76685b36A59774FD37)
+· [smart account](https://scan.bohr.life/address/0x750c09Ff0c9dd3215F2451D3DB878Afa9915A731)
+(EntryPoint nonce 2). Full records, `userOpHash` values and verification steps:
+[docs/onchain-records.md](docs/onchain-records.md).
+
+## Pitch deck
+
+A self-contained slide deck lives at
+[docs/pitch-deck/index.html](docs/pitch-deck/index.html). Open it in a browser
+(arrow keys or click to navigate; print to PDF from the browser).
+
 ## Architecture
 
 ```text
@@ -162,4 +182,6 @@ matching `userOpHash`, `success=true` and a successful outer receipt status.
   when stronger evidence is required.
 
 See [docs/testnet-acceptance.md](docs/testnet-acceptance.md) for the manual
-acceptance checklist and [docs/brand.md](docs/brand.md) for brand usage.
+acceptance checklist, [docs/onchain-records.md](docs/onchain-records.md) for the
+on-chain interaction records with explorer links, and
+[docs/brand.md](docs/brand.md) for brand usage.
