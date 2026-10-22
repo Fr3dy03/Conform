@@ -163,11 +163,34 @@
     .slide { padding: 64px 6vw 96px; justify-content: flex-start; padding-top: 88px; overflow-y: auto; }
     .chrome { padding: 14px 18px; }
   }
+  @page { size: 13.333in 7.5in; margin: 0; }
   @media print {
-    body { overflow: visible; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    html, body { background: var(--void); overflow: visible; }
     .progress, .chrome, .dots, .nav-hint { display: none !important; }
     .slides { height: auto; }
-    .slide { position: static; display: flex !important; page-break-after: always; min-height: 100vh; }
+    .slide {
+      position: static; display: flex !important; justify-content: center;
+      page-break-after: always; break-after: page;
+      height: 7.45in; min-height: 0; max-width: none;
+      overflow: hidden; padding: 0.4in 0.65in;
+    }
+    .slide:last-child { page-break-after: auto; break-after: auto; }
+    h2 { margin-bottom: 0.16in; }
+    li { font-size: 14px; padding-left: 22px; }
+    ul { gap: 10px; }
+    .flow { gap: 10px; margin-bottom: 16px; }
+    .flow .box { padding: 13px 15px; font-size: 13px; }
+    .flow .box strong { margin-bottom: 5px; }
+    .big-rule { font-size: 13.5px; padding: 12px 16px; margin-bottom: 10px; }
+    .note { font-size: 12.5px; margin-top: 10px; }
+    .frame img { height: 3.3in; }
+    .stat { padding: 10px 16px; }
+    .stat .n { font-size: 30px; }
+    .stat-row { gap: 12px; margin-bottom: 16px; }
+    .chips { margin-bottom: 18px; }
+    table { font-size: 13px; }
+    th, td { padding: 9px 10px; }
   }
 </style>
 </head>
@@ -188,6 +211,7 @@
     <div class="links">
       <a href="https://github.com/Fr3dy03/Conform">github.com/Fr3dy03/Conform</a>
       <a href="https://github.com/Fr3dy03/Conform/blob/main/docs/onchain-records.md">On-chain records</a>
+      <a href="conform-pitch-deck.pdf">Download PDF</a>
     </div>
   </section>
 
@@ -360,6 +384,7 @@
     <div class="big-rule"><b>npm install &amp;&amp; npm run dev</b> → <a href="http://localhost:3000/console">localhost:3000/console</a> · add <span class="mono">?demo=1</span> for labelled sample evidence</div>
     <div class="links">
       <a href="https://github.com/Fr3dy03/Conform">GitHub repository</a>
+      <a href="conform-pitch-deck.pdf">Download PDF</a>
       <a href="https://github.com/Fr3dy03/Conform/blob/main/docs/onchain-records.md">On-chain records</a>
       <a href="https://scan.bohr.life/address/0x750c09Ff0c9dd3215F2451D3DB878Afa9915A731">Smart account</a>
       <a href="https://faucet.botchain.ai/basic">Testnet faucet</a>

@@ -96,8 +96,10 @@ Accounts: [owner EOA](https://scan.bohr.life/address/0x5a043e74A78c5534DF9C7f766
 ## Pitch deck
 
 A self-contained slide deck lives at
-[docs/pitch-deck/index.html](docs/pitch-deck/index.html). Open it in a browser
-(arrow keys or click to navigate; print to PDF from the browser).
+[docs/pitch-deck/index.html](docs/pitch-deck/index.html) (arrow keys or click to
+navigate; print to PDF from the browser). A ready-made 10-page widescreen PDF
+is included for download:
+[docs/pitch-deck/conform-pitch-deck.pdf](docs/pitch-deck/conform-pitch-deck.pdf).
 
 ## Architecture
 
