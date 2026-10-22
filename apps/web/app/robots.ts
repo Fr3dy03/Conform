@@ -1,13 +1,5 @@
 import type { MetadataRoute } from "next";
-
-function origin(): string {
-  try {
-    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000")
-      .origin;
-  } catch {
-    return "http://localhost:3000";
-  }
-}
+import { siteOrigin } from "@/lib/site-url";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -16,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/report"],
     },
-    sitemap: `${origin()}/sitemap.xml`,
+    sitemap: `${siteOrigin()}/sitemap.xml`,
   };
 }

@@ -110,6 +110,21 @@ API keys in `NEXT_PUBLIC_*` variables.
 | `BOT_TESTNET_PAYMASTER_ADDRESS` | Optional verified paymaster address |
 | `NEXT_PUBLIC_SITE_URL` | Canonical public origin for links |
 
+## Deploy to Vercel
+
+1. Import <https://github.com/Fr3dy03/Conform> (Vercel dashboard → Add New →
+   Project).
+2. Set the project's **Root Directory** to `apps/web`. Next.js is detected from
+   that directory; npm installs from the committed lockfile at the repository
+   root and workspace packages under `packages/*` are included in the build.
+3. Deploy with no environment variables. Every value above has a checked-in
+   default. When `NEXT_PUBLIC_SITE_URL` is unset, canonical metadata, `robots.txt`
+   and `sitemap.xml` fall back to the Vercel deployment URL.
+
+The RPC and bundler relays deploy as Node.js serverless functions. Their
+internal upstream timeouts (20 s / 30 s) are below the route `maxDuration` and
+the Vercel function limit, so a slow endpoint never hangs a request.
+
 ## Live UserOperation flow
 
 1. Open `/console` and run diagnostics.

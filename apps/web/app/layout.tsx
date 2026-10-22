@@ -1,15 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { BotChainFooter } from "@conform/ui";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
-
-function siteUrl(): URL {
-  try {
-    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000");
-  } catch {
-    return new URL("http://localhost:3000");
-  }
-}
 
 const description =
   "A BOT Chain testnet workbench for ERC-4337. Check network identity, bundler methods, deployments, SimpleAccount derivation, and a receipt-backed UserOperation.";
